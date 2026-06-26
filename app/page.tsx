@@ -93,10 +93,9 @@ export default function Home() {
           <div style={{ display: "inline-block", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 20, padding: "4px 14px", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.9)", marginBottom: 24, letterSpacing: "0.05em", textTransform: "uppercase" as const }}>
             Travel Booking · Reimagined
           </div>
-          <h1 style={{ fontSize: "clamp(28px, 5vw, 56px)", fontWeight: 900, lineHeight: 1.06, margin: "0 0 20px", letterSpacing: "-2px" }}>
+          <h1 style={{ fontSize: "clamp(24px, 3.5vw, 52px)", fontWeight: 900, lineHeight: 1.06, margin: "0 0 20px", letterSpacing: "-2px" }}>
             <span style={{ color: "#fff" }}>Book travel.</span><br />
-            <span style={{ color: YELLOW }}>See everything</span><br />
-            <span style={{ color: "#fff" }}>before you pay.</span>
+            <em className="hero-nowrap" style={{ color: YELLOW, fontStyle: "normal", whiteSpace: "nowrap" }}>See everything before you pay.</em>
           </h1>
           <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "clamp(13px, 1.5vw, 17px)", lineHeight: 1.7, margin: "0 0 36px", maxWidth: 520, marginLeft: "auto", marginRight: "auto" }}>
             Every result is scored for hidden fees and restrictions before you see it. No desk surprises. No hidden charges.

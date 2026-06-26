@@ -282,6 +282,11 @@ body {
   .card-footer-buttons > * { width: 100% !important; text-align: center !important; display: block !important; }
 }
 
+/* === Hero Headline === */
+@media (max-width: 640px) {
+  .hero-nowrap { white-space: normal !important; }
+}
+
 /* === Hero Buttons === */
 .hero-buttons {
   display: flex;
