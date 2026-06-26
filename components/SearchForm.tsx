@@ -122,8 +122,6 @@ export default function SearchForm({ compact = false, defaultType = "carhire" }:
     </>
   );
 
-  const gridCols = type === "flights" ? "1.2fr 1.2fr 1fr 1fr 0.7fr" : "2fr 1fr 1fr 1fr";
-
   return (
     <div>
       {/* Tabs */}
@@ -133,7 +131,7 @@ export default function SearchForm({ compact = false, defaultType = "carhire" }:
             key={tab.key}
             onClick={() => setType(tab.key)}
             style={{
-              padding: compact ? "8px 16px" : "11px 20px",
+              padding: compact ? "8px 14px" : "11px 20px",
               border: "none",
               borderBottom: type === tab.key ? `2px solid ${ACCENT}` : "2px solid transparent",
               background: type === tab.key ? "#fff" : "transparent",
@@ -143,13 +141,14 @@ export default function SearchForm({ compact = false, defaultType = "carhire" }:
               transition: "all 0.12s", marginBottom: -1,
             }}
           >
-            <span>{tab.icon}</span> {tab.label}
+            <span>{tab.icon}</span>
+            <span>{tab.label}</span>
           </button>
         ))}
       </div>
 
-      {/* Fields grid */}
-      <div style={{ display: "grid", gridTemplateColumns: gridCols, borderBottom: "1px solid #f0f5ff" }}>
+      {/* Fields grid — responsive via CSS class */}
+      <div className={`search-fields-grid search-fields-grid-${type}`}>
         {type === "carhire" && carhireFields}
         {type === "hotels"  && hotelFields}
         {type === "flights" && flightFields}
@@ -161,7 +160,7 @@ export default function SearchForm({ compact = false, defaultType = "carhire" }:
           onClick={handleSearch}
           style={{
             width: "100%", background: NAVY, color: "#fff", border: "none",
-            borderRadius: 9, padding: compact ? "10px" : "12px",
+            borderRadius: 9, padding: compact ? "10px" : "13px",
             fontSize: compact ? 13 : 14, fontWeight: 700,
             cursor: "pointer", letterSpacing: "-0.1px",
             transition: "filter 0.15s",

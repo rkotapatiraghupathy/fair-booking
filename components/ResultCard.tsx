@@ -4,7 +4,6 @@ import TransparencyScore from "./TransparencyScore";
 import type { SearchResult, CarHireResult, HotelResult, FlightResult } from "@/lib/types";
 
 const NAVY  = "#163a8e";
-const ACCENT = "#e8501a";
 
 function initials(name: string) {
   return name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
@@ -68,16 +67,16 @@ export default function ResultCard({ result }: { result: SearchResult }) {
   const [hovered, setHovered] = useState(false);
 
   const { name, subtitle, meta, price, priceLabel, trueCost, affiliateUrl } = getInfo(result);
-  const score   = result.transparencyScore;
-  const saving  = trueCost - price;
+  const score    = result.transparencyScore;
+  const saving   = trueCost - price;
   const cashback = Math.round(price * 0.05);
 
   const isRecommended = score >= 80;
   const isHighRisk    = score < 50;
 
-  const bannerBg   = score >= 80 ? "#dcfce7" : score >= 65 ? "#fef9c3" : score >= 50 ? "#fff7ed" : "#fee2e2";
-  const bannerText = score >= 80 ? "#166534" : score >= 65 ? "#854d0e" : score >= 50 ? "#9a3412" : "#991b1b";
-  const bannerIcon = score >= 80 ? "✅" : score >= 65 ? "⚠️" : score >= 50 ? "🟠" : "🔴";
+  const bannerBg    = score >= 80 ? "#dcfce7" : score >= 65 ? "#fef9c3" : score >= 50 ? "#fff7ed" : "#fee2e2";
+  const bannerText  = score >= 80 ? "#166534" : score >= 65 ? "#854d0e" : score >= 50 ? "#9a3412" : "#991b1b";
+  const bannerIcon  = score >= 80 ? "✅" : score >= 65 ? "⚠️" : score >= 50 ? "🟠" : "🔴";
   const bannerLabel = score >= 80 ? "Excellent — Low restriction risk"
                     : score >= 65 ? "Good — Minor restrictions apply"
                     : score >= 50 ? "Fair — Review terms carefully"
@@ -94,24 +93,25 @@ export default function ResultCard({ result }: { result: SearchResult }) {
         boxShadow: hovered ? "0 6px 24px rgba(22,58,142,0.12)" : "0 1px 4px rgba(22,58,142,0.06)",
         transform: hovered ? "translateY(-2px)" : "none",
         transition: "box-shadow 0.15s, transform 0.15s",
+        width: "100%",
       }}
     >
       {/* Top banner */}
-      <div style={{ background: bannerBg, padding: "7px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: bannerText }}>
+      <div style={{ background: bannerBg, padding: "7px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: bannerText, flexShrink: 1, minWidth: 0 }}>
           {bannerIcon} {bannerLabel}
         </span>
         <TransparencyScore score={score} size="sm" />
       </div>
 
-      {/* Body — 3-col grid */}
-      <div style={{ padding: "14px 16px", display: "grid", gridTemplateColumns: "42px 1fr auto", gap: 14, alignItems: "flex-start" }}>
+      {/* Body — responsive via .card-body CSS class */}
+      <div className="card-body">
         {/* Provider circle */}
         <div style={{
-          width: 42, height: 42, borderRadius: 10, flexShrink: 0,
+          width: 42, height: 42, borderRadius: 10,
           background: "#f1f6fe", border: "1px solid #dbe8fa",
           color: NAVY, display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 14, fontWeight: 800, letterSpacing: "-0.5px",
+          fontSize: 13, fontWeight: 800, letterSpacing: "-0.5px", flexShrink: 0,
         }}>
           {initials(name)}
         </div>
@@ -128,14 +128,18 @@ export default function ResultCard({ result }: { result: SearchResult }) {
           </div>
         </div>
 
-        {/* Price */}
-        <div style={{ textAlign: "right" as const, flexShrink: 0, minWidth: 108 }}>
-          <div style={{ fontSize: 10, color: "#6b84b0", marginBottom: 1 }}>{priceLabel}</div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: "#0a1628", lineHeight: 1.1 }}>£{price}</div>
-          <div style={{ fontSize: 10, color: "#6b84b0", marginTop: 7, marginBottom: 1 }}>Est. true cost</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: saving > 0 ? "#dc2626" : "#166534", lineHeight: 1.1 }}>£{trueCost}</div>
-          {saving > 0 && <div style={{ fontSize: 10, color: "#dc2626", fontWeight: 700, marginTop: 1 }}>+£{saving} in extras</div>}
-          <div style={{ marginTop: 7, display: "inline-flex", alignItems: "center", gap: 4, background: "#dcfce7", color: "#166534", border: "1px solid #86efac", borderRadius: 6, padding: "2px 7px", fontSize: 10, fontWeight: 700 }}>
+        {/* Price — .card-price class handles mobile layout */}
+        <div className="card-price" style={{ textAlign: "right" as const, flexShrink: 0, minWidth: 108 }}>
+          <div className="card-price-item">
+            <div style={{ fontSize: 10, color: "#6b84b0" }}>{priceLabel}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: "#0a1628", lineHeight: 1.1 }}>£{price}</div>
+          </div>
+          <div className="card-price-item">
+            <div style={{ fontSize: 10, color: "#6b84b0" }}>Est. true cost</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: saving > 0 ? "#dc2626" : "#166534", lineHeight: 1.1 }}>£{trueCost}</div>
+            {saving > 0 && <div style={{ fontSize: 10, color: "#dc2626", fontWeight: 700 }}>+£{saving} in extras</div>}
+          </div>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#dcfce7", color: "#166534", border: "1px solid #86efac", borderRadius: 6, padding: "2px 7px", fontSize: 10, fontWeight: 700, whiteSpace: "nowrap" as const }}>
             💰 FairBooking: £{cashback}
           </div>
         </div>
@@ -143,7 +147,6 @@ export default function ResultCard({ result }: { result: SearchResult }) {
 
       {/* Footer */}
       <div style={{ background: "#f8faff", borderTop: "1px solid #f0f5ff", padding: "10px 16px" }}>
-        {/* Notes row */}
         <div style={{ display: "flex", gap: 14, marginBottom: 9, flexWrap: "wrap" as const }}>
           <span style={{ fontSize: 10, color: "#166534", fontWeight: 600 }}>
             💰 Est. £{cashback} cashback on this booking
@@ -154,8 +157,8 @@ export default function ResultCard({ result }: { result: SearchResult }) {
             </span>
           )}
         </div>
-        {/* Buttons row */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+        {/* Buttons — .card-footer-buttons class handles mobile stacking */}
+        <div className="card-footer-buttons">
           <button
             onClick={() => setExpanded(!expanded)}
             style={{
