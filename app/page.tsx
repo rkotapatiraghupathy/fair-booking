@@ -1,251 +1,278 @@
 import SearchForm from "@/components/SearchForm";
+import ResultCard from "@/components/ResultCard";
+import type { CarHireResult } from "@/lib/types";
 
+const NAVY   = "#163a8e";
 const ACCENT = "#e8501a";
-const DARK = "#0f172a";
+const YELLOW = "#f4be41";
+const DARK   = "#0a1628";
 
 const STEPS = [
-  { step: "1", icon: "🔍", title: "Search normally",       desc: "Enter your destination, dates, and preferences — just like any booking site." },
+  { step: "1", icon: "🔍", title: "Search normally",        desc: "Enter your destination, dates, and preferences — just like any booking site." },
   { step: "2", icon: "🤖", title: "AI scores every result", desc: "Our RentalTruth engine reads the terms of every result and assigns a transparency score." },
   { step: "3", icon: "🏆", title: "See the full picture",   desc: "Results show advertised price, estimated true cost, and all hidden restrictions." },
   { step: "4", icon: "✅", title: "Book with confidence",   desc: "Choose the safest option, not just the cheapest. No surprises at the desk." },
 ];
 
-const SCORE_TIERS = [
-  { range: "80–100", label: "Excellent", color: "#15803d", bg: "#dcfce7", desc: "Book with confidence" },
-  { range: "65–79",  label: "Good",      color: "#a16207", bg: "#fef9c3", desc: "Minor restrictions only" },
-  { range: "50–64",  label: "Fair",      color: "#c2410c", bg: "#ffedd5", desc: "Review terms carefully" },
-  { range: "0–49",   label: "Poor",      color: "#b91c1c", bg: "#fee2e2", desc: "High risk of surprise charges" },
+const FEATURES = [
+  { icon: "🏆", title: "Transparency Scores",       desc: "Every result rated 0–100 for hidden fees and restrictions before you see it." },
+  { icon: "💰", title: "True Cost Calculated",      desc: "See what you'll actually pay — deposits, surcharges and extras all included." },
+  { icon: "🔍", title: "AI Fine-Print Analysis",    desc: "Our AI reads the T&Cs so you don't have to. Every restriction surfaced." },
+  { icon: "🎯", title: "Book Direct — No Markup",   desc: "Go straight to the provider. No middleman, no inflated prices." },
+  { icon: "💸", title: "Cashback on Every Booking", desc: "10% of our affiliate commission comes back to you. Always." },
+  { icon: "✉️", title: "Auto Complaint Letter",     desc: "If things go wrong, we generate a legally-grounded refund request for you." },
+];
+
+const TRUST_ITEMS = [
+  { icon: "🏆", title: "Every result scored",     sub: "0–100 transparency rating" },
+  { icon: "🎯", title: "Book direct",              sub: "No middleman no markup" },
+  { icon: "💸", title: "Cashback included",        sub: "10% of our commission yours" },
+  { icon: "✅", title: "Always free",              sub: "No sign-up required" },
+];
+
+const PREVIEW_RESULTS: CarHireResult[] = [
+  {
+    id: "p1", type: "carhire", provider: "Enterprise", providerLogo: "",
+    vehicle: "Ford Focus or similar", category: "Economy",
+    pickupLocation: "Liverpool Airport", dropoffLocation: "Liverpool Airport",
+    pickupDate: "2026-07-10", dropoffDate: "2026-07-13",
+    days: 3, pricePerDay: 22, totalPrice: 66, estimatedTrueCost: 82,
+    transparencyScore: 91, transparencyLevel: "EXCELLENT",
+    flags: [
+      { label: "Debit card accepted", severity: "green" },
+      { label: "Free cancellation", severity: "green" },
+    ],
+    topWarning: null, affiliateUrl: "#", features: [],
+  },
+  {
+    id: "p2", type: "carhire", provider: "Hertz", providerLogo: "",
+    vehicle: "VW Golf or similar", category: "Compact",
+    pickupLocation: "Liverpool Airport", dropoffLocation: "Liverpool Airport",
+    pickupDate: "2026-07-10", dropoffDate: "2026-07-13",
+    days: 3, pricePerDay: 18, totalPrice: 54, estimatedTrueCost: 119,
+    transparencyScore: 58, transparencyLevel: "FAIR",
+    flags: [
+      { label: "£600 deposit hold", severity: "amber" },
+      { label: "Credit card only", severity: "red" },
+    ],
+    topWarning: "£600 pre-auth deposit required", affiliateUrl: "#", features: [],
+  },
+  {
+    id: "p3", type: "carhire", provider: "Alamo", providerLogo: "",
+    vehicle: "Toyota Yaris or similar", category: "Mini",
+    pickupLocation: "Liverpool Airport", dropoffLocation: "Liverpool Airport",
+    pickupDate: "2026-07-10", dropoffDate: "2026-07-13",
+    days: 3, pricePerDay: 12, totalPrice: 36, estimatedTrueCost: 94,
+    transparencyScore: 31, transparencyLevel: "POOR",
+    flags: [
+      { label: "Boarding pass required", severity: "red" },
+      { label: "Credit card only", severity: "red" },
+    ],
+    topWarning: "Boarding pass required — high denial risk", affiliateUrl: "#", features: [],
+  },
 ];
 
 export default function Home() {
   return (
-    <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", minHeight: "100vh", background: "#f8fafc" }}>
+    <div style={{ fontFamily: "inherit", minHeight: "100vh" }}>
 
-      {/* ── Nav — white with subtle border ── */}
-      <nav style={{ background: "#fff", borderBottom: "1px solid #e2e8f0", padding: "0 24px", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", height: 60 }}>
+      {/* ── Nav — navy ── */}
+      <nav style={{ background: NAVY, borderBottom: "1px solid #1d4499", padding: "0 28px", position: "sticky", top: 0, zIndex: 50 }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", height: 62 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 20 }}>🔍</span>
-            <span style={{ color: DARK, fontSize: 20, fontWeight: 800 }}>
+            <span style={{ color: "#fff", fontSize: 20, fontWeight: 800 }}>
               Fair<span style={{ color: ACCENT }}>Booking</span>
             </span>
             <span style={{ background: ACCENT, color: "#fff", fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4, letterSpacing: "0.04em" }}>BETA</span>
           </div>
-          <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
-            <a href="#how"    style={{ color: "#374151", fontSize: 13, fontWeight: 500, textDecoration: "none" }}>How it works</a>
-            <a href="#scores" style={{ color: "#374151", fontSize: 13, fontWeight: 500, textDecoration: "none" }}>Our scores</a>
-            <a href="https://rentaltruth.co.uk" target="_blank" rel="noopener noreferrer" style={{ color: "#374151", fontSize: 13, fontWeight: 500, textDecoration: "none" }}>Analyse booking</a>
-            <a href="#search" style={{ background: ACCENT, color: "#fff", fontSize: 13, fontWeight: 700, padding: "8px 18px", borderRadius: 8, textDecoration: "none" }}>Search free →</a>
+          <div style={{ display: "flex", gap: 28, alignItems: "center" }}>
+            <a href="#how"      style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, fontWeight: 500, textDecoration: "none" }}>Car hire</a>
+            <a href="#how"      style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, fontWeight: 500, textDecoration: "none" }}>Hotels</a>
+            <a href="#how"      style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, fontWeight: 500, textDecoration: "none" }}>Flights</a>
+            <a href="#how"      style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, fontWeight: 500, textDecoration: "none" }}>How it works</a>
+            <a href="#search"   style={{ background: ACCENT, color: "#fff", fontSize: 13, fontWeight: 700, padding: "8px 18px", borderRadius: 8, textDecoration: "none" }}>Search free →</a>
           </div>
         </div>
       </nav>
 
-      {/* ── Hero — sky-blue to white gradient ── */}
-      <div style={{ background: "linear-gradient(175deg, #e0f2fe 0%, #f0f9ff 45%, #f8fafc 100%)", padding: "72px 24px 60px" }}>
-        <div style={{ maxWidth: 780, margin: "0 auto", textAlign: "center" }}>
-          <div style={{ display: "inline-block", background: "rgba(232,80,26,0.09)", border: "1px solid rgba(232,80,26,0.22)", borderRadius: 20, padding: "4px 14px", fontSize: 12, fontWeight: 600, color: ACCENT, marginBottom: 22, letterSpacing: "0.05em", textTransform: "uppercase" as const }}>
+      {/* ── Hero — navy gradient, floating search card ── */}
+      <div style={{ background: "linear-gradient(145deg, #163a8e 0%, #1e4db7 50%, #2d6adc 100%)", padding: "64px 28px 0" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
+          <div style={{ display: "inline-block", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 20, padding: "4px 14px", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.9)", marginBottom: 24, letterSpacing: "0.05em", textTransform: "uppercase" as const }}>
             Travel Booking · Reimagined
           </div>
-          <h1 style={{ color: DARK, fontSize: "clamp(32px, 5vw, 56px)", fontWeight: 900, lineHeight: 1.08, margin: "0 0 18px", letterSpacing: "-2px" }}>
-            Search travel with<br />
-            <span style={{ color: ACCENT }}>full transparency.</span>
+          <h1 style={{ fontSize: "clamp(36px, 5.5vw, 62px)", fontWeight: 900, lineHeight: 1.06, margin: "0 0 20px", letterSpacing: "-2px" }}>
+            <span style={{ color: "#fff" }}>Book travel.</span><br />
+            <span style={{ color: YELLOW }}>See everything</span><br />
+            <span style={{ color: "#fff" }}>before you pay.</span>
           </h1>
-          <p style={{ color: "#475569", fontSize: "clamp(15px, 2vw, 18px)", lineHeight: 1.7, margin: "0 0 36px", maxWidth: 540, marginLeft: "auto", marginRight: "auto" }}>
+          <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "clamp(15px, 2vw, 18px)", lineHeight: 1.7, margin: "0 0 36px", maxWidth: 520, marginLeft: "auto", marginRight: "auto" }}>
             Every result is scored for hidden fees and restrictions before you see it. No desk surprises. No hidden charges.
           </p>
-
-          {/* Search form card with strong shadow */}
-          <div id="search" style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 16px rgba(0,0,0,0.12)", padding: "28px 28px 24px", textAlign: "left" as const }}>
-            <SearchForm />
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 44 }}>
+            <a href="#search" style={{ background: ACCENT, color: YELLOW, fontWeight: 800, fontSize: 15, padding: "13px 30px", borderRadius: 10, textDecoration: "none", letterSpacing: "-0.2px" }}>
+              Search with transparency →
+            </a>
+            <a href="#how" style={{ background: "rgba(255,255,255,0.12)", color: "#fff", fontWeight: 700, fontSize: 14, padding: "13px 24px", borderRadius: 10, textDecoration: "none", border: "1px solid rgba(255,255,255,0.25)" }}>
+              How it works
+            </a>
           </div>
 
-          {/* Category pills */}
-          <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 18, flexWrap: "wrap" as const }}>
-            {[{ icon: "🚗", label: "Car Hire" }, { icon: "🏨", label: "Hotels" }, { icon: "✈️", label: "Flights" }].map(({ icon, label }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, color: "#64748b", fontSize: 13, fontWeight: 600, background: "#fff", border: "1px solid #e2e8f0", borderRadius: 20, padding: "6px 14px" }}>
-                <span>{icon}</span> {label}
-              </div>
-            ))}
+          {/* Floating search card — no bottom radius */}
+          <div id="search" style={{ maxWidth: 680, margin: "0 auto", background: "#fff", borderRadius: "14px 14px 0 0", boxShadow: "0 -4px 32px rgba(0,0,0,0.2)", overflow: "hidden" }}>
+            <SearchForm />
           </div>
         </div>
       </div>
 
-      {/* ── Trust bar — light blue ── */}
-      <div style={{ background: "#eff6ff", padding: "22px 24px", borderTop: "1px solid #bfdbfe", borderBottom: "1px solid #bfdbfe" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "center", gap: 48, flexWrap: "wrap" as const }}>
-          {[
-            { icon: "🏆", stat: "Every result scored",       sub: "FairBooking transparency score" },
-            { icon: "🔍", stat: "Hidden fees surfaced",       sub: "Before you click Book" },
-            { icon: "🤖", stat: "Powered by RentalTruth",    sub: "AI fine-print analysis" },
-            { icon: "✅", stat: "Free to use",               sub: "Always — no account needed" },
-          ].map(({ icon, stat, sub }) => (
-            <div key={stat} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      {/* ── Trust bar — white ── */}
+      <div style={{ background: "#fff", borderBottom: "1px solid #dbe8fa", padding: "0 28px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "center", flexWrap: "wrap" as const }}>
+          {TRUST_ITEMS.map(({ icon, title, sub }, i) => (
+            <div key={title} style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 32px", borderRight: i < TRUST_ITEMS.length - 1 ? "1px solid #f0f5ff" : "none" }}>
               <span style={{ fontSize: 22 }}>{icon}</span>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 800, color: "#1e3a5f" }}>{stat}</div>
-                <div style={{ fontSize: 11, color: "#3b82f6", marginTop: 1 }}>{sub}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: DARK }}>{title}</div>
+                <div style={{ fontSize: 11, color: "#6b84b0", marginTop: 1 }}>{sub}</div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-
-        {/* ── Comparison table ── */}
-        <section style={{ padding: "72px 0 0" }}>
-          <h2 style={{ fontSize: "clamp(22px, 3vw, 32px)", fontWeight: 900, color: DARK, margin: "0 0 8px", textAlign: "center", letterSpacing: "-0.5px" }}>
-            Not just cheaper. <span style={{ color: ACCENT }}>Clearer.</span>
-          </h2>
-          <p style={{ fontSize: 15, color: "#6b7280", textAlign: "center", margin: "0 0 40px" }}>
-            Every booking platform shows you the price. Only FairBooking shows you the truth.
-          </p>
-          <div style={{ background: "#fff", borderRadius: 16, overflow: "hidden", border: "1.5px solid #e2e8f0", maxHeight: 420, overflowY: "auto" as const, boxShadow: "0 1px 8px rgba(0,0,0,0.05)" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead style={{ position: "sticky" as const, top: 0, zIndex: 1 }}>
-                <tr style={{ background: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
-                  <th style={{ padding: "14px 20px", textAlign: "left" as const, color: "#6b7280", fontSize: 12, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.06em" }}>Feature</th>
-                  {["Booking.com", "Expedia", "Kayak", "FairBooking"].map(p => (
-                    <th key={p} style={{ padding: "14px 20px", textAlign: "center" as const, color: p === "FairBooking" ? ACCENT : "#9ca3af", fontSize: 12, fontWeight: 700, textTransform: "uppercase" as const }}>
-                      {p === "FairBooking" ? `⚡ ${p}` : p}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ["Shows advertised price",           "✅", "✅", "✅", "✅"],
-                  ["Shows estimated TRUE cost",         "❌", "❌", "❌", "✅"],
-                  ["Flags hidden restrictions",         "❌", "❌", "❌", "✅"],
-                  ["Transparency score per result",     "❌", "❌", "❌", "✅"],
-                  ["Flight arrival requirement warning","❌", "❌", "❌", "✅"],
-                  ["Deposit hold amount shown",         "❌", "❌", "❌", "✅"],
-                  ["Plain English restriction summary", "❌", "❌", "❌", "✅"],
-                  ["Generates complaint letter",        "❌", "❌", "❌", "✅"],
-                ].map(([feature, ...vals], i) => (
-                  <tr key={i} style={{ borderTop: "1px solid #f1f5f9", background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                    <td style={{ padding: "13px 20px", fontSize: 13, color: "#374151", fontWeight: 500 }}>{feature}</td>
-                    {vals.map((v, j) => (
-                      <td key={j} style={{
-                        padding: "13px 20px", textAlign: "center" as const, fontSize: 16,
-                        fontWeight: j === 3 ? 800 : 400,
-                        color: j === 3 ? (v === "✅" ? "#15803d" : "#dc2626") : (v === "✅" ? "#374151" : "#d1d5db"),
-                        background: j === 3 ? "rgba(232,80,26,0.03)" : "transparent",
-                      }}>{v}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* ── Features 3×2 grid ── */}
+      <section style={{ background: "#fff", borderBottom: "1px solid #dbe8fa", padding: "72px 28px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ textAlign: "center" as const, marginBottom: 44 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.1em", color: ACCENT, marginBottom: 10 }}>Why FairBooking</div>
+            <h2 style={{ fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 900, color: DARK, margin: "0 0 12px", letterSpacing: "-0.5px" }}>
+              Everything other platforms hide.{" "}
+              <span style={{ color: NAVY }}>We show.</span>
+            </h2>
+            <p style={{ fontSize: 15, color: "#6b84b0", margin: 0 }}>
+              Built on the same AI engine as RentalTruth — transparency at every step.
+            </p>
           </div>
-        </section>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+            {FEATURES.map(({ icon, title, desc }) => (
+              <div key={title} style={{ background: "#f8faff", border: "1px solid #dbe8fa", borderTop: `3px solid ${NAVY}`, borderRadius: 12, padding: "24px 22px" }}>
+                <div style={{ fontSize: 28, marginBottom: 12 }}>{icon}</div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: DARK, marginBottom: 8 }}>{title}</div>
+                <p style={{ margin: 0, fontSize: 13, color: "#6b84b0", lineHeight: 1.65 }}>{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-        {/* ── How it works — horizontal stepper ── */}
-        <section id="how" style={{ padding: "72px 0 0" }}>
-          <h2 style={{ fontSize: "clamp(22px, 3vw, 32px)", fontWeight: 900, color: DARK, margin: "0 0 8px", textAlign: "center", letterSpacing: "-0.5px" }}>How FairBooking works</h2>
-          <p style={{ fontSize: 15, color: "#6b7280", textAlign: "center", margin: "0 0 52px" }}>Transparency built into every step</p>
-          <div style={{ position: "relative", display: "flex", alignItems: "flex-start" }}>
-            {/* Dotted connecting line */}
-            <div style={{ position: "absolute" as const, top: 23, left: "calc(12.5% + 0px)", right: "calc(12.5% + 0px)", height: 0, borderTop: "2px dashed #cbd5e1", zIndex: 0 }} />
+      {/* ── How it works — horizontal stepper ── */}
+      <section id="how" style={{ background: "#f8faff", borderBottom: "1px solid #dbe8fa", padding: "72px 28px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <h2 style={{ fontSize: "clamp(22px, 3vw, 32px)", fontWeight: 900, color: DARK, margin: "0 0 8px", textAlign: "center" as const, letterSpacing: "-0.5px" }}>
+            How FairBooking works
+          </h2>
+          <p style={{ fontSize: 15, color: "#6b84b0", textAlign: "center" as const, margin: "0 0 52px" }}>Transparency built into every step</p>
+          <div style={{ position: "relative" as const, display: "flex", alignItems: "flex-start" }}>
+            <div style={{ position: "absolute" as const, top: 23, left: "calc(12.5%)", right: "calc(12.5%)", height: 0, borderTop: "2px dashed #dbe8fa", zIndex: 0 }} />
             {STEPS.map(({ step, icon, title, desc }) => (
               <div key={step} style={{ flex: 1, padding: "0 12px", textAlign: "center" as const, position: "relative" as const, zIndex: 1 }}>
-                <div style={{ width: 48, height: 48, borderRadius: "50%", background: ACCENT, color: "#fff", fontWeight: 900, fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 4px 16px rgba(232,80,26,0.35)", border: "3px solid #fff" }}>
+                <div style={{ width: 48, height: 48, borderRadius: "50%", background: NAVY, color: "#fff", fontWeight: 900, fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 4px 16px rgba(22,58,142,0.35)", border: "3px solid #fff" }}>
                   {step}
                 </div>
                 <div style={{ fontSize: 26, marginBottom: 10 }}>{icon}</div>
                 <div style={{ fontSize: 14, fontWeight: 800, color: DARK, marginBottom: 6 }}>{title}</div>
-                <p style={{ margin: 0, fontSize: 13, color: "#6b7280", lineHeight: 1.6 }}>{desc}</p>
+                <p style={{ margin: 0, fontSize: 13, color: "#6b84b0", lineHeight: 1.6 }}>{desc}</p>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── Score explainer — white card with shadow ── */}
-        <section id="scores" style={{ padding: "72px 0 0" }}>
-          <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 4px 32px rgba(0,0,0,0.08)", border: "1px solid #f1f5f9", padding: "44px 48px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 52, alignItems: "center" }}>
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.1em", color: ACCENT, marginBottom: 12 }}>The FairBooking Score</div>
-              <h2 style={{ fontSize: 26, fontWeight: 900, color: DARK, margin: "0 0 14px", lineHeight: 1.2, letterSpacing: "-0.5px" }}>One number. The whole truth.</h2>
-              <p style={{ fontSize: 14, color: "#475569", lineHeight: 1.75, margin: "0 0 24px" }}>
-                Every result is scored 0–100 based on how many hidden restrictions it contains and how severe they are. Powered by the same AI engine as RentalTruth.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
-                {SCORE_TIERS.map(({ range, label, color, bg, desc }) => (
-                  <div key={range} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ background: bg, color, border: `1px solid ${color}22`, fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 20, minWidth: 54, textAlign: "center" as const, flexShrink: 0 }}>{range}</div>
-                    <div>
-                      <span style={{ fontSize: 13, fontWeight: 800, color: DARK }}>{label}</span>
-                      <span style={{ fontSize: 12, color: "#6b7280", marginLeft: 8 }}>— {desc}</span>
-                    </div>
-                  </div>
-                ))}
+      {/* ── Results preview ── */}
+      <section style={{ background: "#f1f6fe", borderTop: "1px solid #dbe8fa", padding: "40px 28px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ textAlign: "center" as const, marginBottom: 28 }}>
+            <h2 style={{ fontSize: "clamp(20px, 2.5vw, 28px)", fontWeight: 900, color: DARK, margin: "0 0 8px", letterSpacing: "-0.5px" }}>
+              What results look like
+            </h2>
+            <p style={{ fontSize: 14, color: "#6b84b0", margin: 0 }}>
+              Real transparency scores on live car hire results — try clicking "Full breakdown"
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+            {/* Static preview filter sidebar */}
+            <aside style={{ width: 190, flexShrink: 0, background: "#fff", border: "1px solid #dbe8fa", borderRadius: 12, padding: "18px 16px", alignSelf: "flex-start" }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: DARK, marginBottom: 14 }}>Filters</div>
+              <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.08em", color: "#6b84b0", marginBottom: 8 }}>
+                Min. Transparency
               </div>
+              <input type="range" min={0} max={100} defaultValue={0} readOnly style={{ width: "100%", accentColor: NAVY }} />
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#94a3b8", marginTop: 2, marginBottom: 16 }}>
+                <span>Any</span><span>100</span>
+              </div>
+              <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.08em", color: "#6b84b0", marginBottom: 8 }}>
+                Show only
+              </div>
+              <label style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 8, cursor: "pointer", fontSize: 12, color: "#374151" }}>
+                <input type="checkbox" readOnly style={{ accentColor: NAVY }} /> Free cancellation
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "#374151", cursor: "pointer" }}>
+                <input type="checkbox" readOnly style={{ accentColor: NAVY }} /> Debit card accepted
+              </label>
+            </aside>
+
+            {/* Preview cards */}
+            <div style={{ flex: 1, display: "flex", flexDirection: "column" as const, gap: 14 }}>
+              {PREVIEW_RESULTS.map(r => (
+                <ResultCard key={r.id} result={r} />
+              ))}
             </div>
-
-            {/* Score preview cards */}
-            <div style={{ display: "flex", flexDirection: "column" as const, gap: 10 }}>
-              {[
-                { score: 91, name: "Enterprise",  vehicle: "Ford Focus · Economy", price: "£42", note: "✅ Debit accepted · ✅ Free cancellation" },
-                { score: 68, name: "Hertz",        vehicle: "VW Golf · Compact",   price: "£38", note: "⚠️ £600 deposit · ✅ Debit accepted" },
-                { score: 34, name: "Alamo",        vehicle: "Toyota Yaris · Mini", price: "£29", note: "🚫 Airport-only rate · 🚫 Credit card only" },
-              ].map(({ score, name, vehicle, price, note }) => {
-                const s = score >= 80 ? { bg: "#dcfce7", text: "#15803d", border: "#bbf7d0", label: "Excellent" }
-                         : score >= 65 ? { bg: "#fef9c3", text: "#a16207", border: "#fde047", label: "Good" }
-                         : { bg: "#fee2e2", text: "#b91c1c", border: "#fca5a5", label: "Poor" };
-                return (
-                  <div key={name} style={{ background: "#f8fafc", border: "1.5px solid #e2e8f0", borderRadius: 10, padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                        <span style={{ fontSize: 13, fontWeight: 800, color: DARK }}>{name}</span>
-                        <span style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}`, borderRadius: 20, padding: "2px 9px", fontSize: 11, fontWeight: 700 }}>
-                          {score} · {s.label}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}>{vehicle}</div>
-                      <div style={{ fontSize: 11, color: "#94a3b8" }}>{note}</div>
-                    </div>
-                    <div style={{ textAlign: "right" as const, flexShrink: 0 }}>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: DARK }}>{price}</div>
-                      <div style={{ fontSize: 10, color: "#94a3b8" }}>total</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* ── CTA ── */}
-        <section style={{ padding: "72px 0 72px", textAlign: "center" as const }}>
-          <h2 style={{ fontSize: "clamp(20px, 3vw, 28px)", fontWeight: 900, color: DARK, margin: "0 0 12px", letterSpacing: "-0.5px" }}>Ready to book without surprises?</h2>
-          <p style={{ fontSize: 15, color: "#6b7280", margin: "0 0 28px" }}>Search car hire, hotels, or flights — with full transparency on every result.</p>
-          <a href="#search" style={{ background: ACCENT, color: "#fff", fontWeight: 800, fontSize: 16, padding: "16px 38px", borderRadius: 10, textDecoration: "none", display: "inline-block", boxShadow: "0 4px 20px rgba(232,80,26,0.35)" }}>
-            Start searching →
-          </a>
-          <p style={{ fontSize: 12, color: "#94a3b8", marginTop: 14 }}>
-            Already have a booking?{" "}
-            <a href="https://rentaltruth.co.uk" target="_blank" rel="noopener noreferrer" style={{ color: ACCENT, fontWeight: 600 }}>Analyse it on RentalTruth →</a>
-          </p>
-        </section>
-
-      </div>
-
-      {/* ── Footer — light grey ── */}
-      <div style={{ background: "#f8fafc", borderTop: "1px solid #e2e8f0", padding: "32px 24px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" as const, gap: 16 }}>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: DARK, marginBottom: 4 }}>
-              Fair<span style={{ color: ACCENT }}>Booking</span>
-            </div>
-            <p style={{ fontSize: 12, color: "#64748b", margin: 0 }}>Transparent travel booking · Powered by RentalTruth AI</p>
-          </div>
-          <div style={{ display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap" as const }}>
-            <a href="https://rentaltruth.co.uk" target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#64748b", textDecoration: "none", fontWeight: 500 }}>RentalTruth</a>
-            <a href="mailto:hello@fairbooking.co.uk" style={{ fontSize: 13, color: "#64748b", textDecoration: "none", fontWeight: 500 }}>Contact</a>
-            <span style={{ fontSize: 12, color: "#94a3b8" }}>© 2026 FairBooking Ltd</span>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* ── CTA gradient ── */}
+      <section style={{ background: "linear-gradient(135deg, #163a8e 0%, #1e4db7 50%, #2d6adc 100%)", padding: "80px 28px", textAlign: "center" as const }}>
+        <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.1em", color: "rgba(255,255,255,0.6)", marginBottom: 14 }}>
+            Start now — it&apos;s free
+          </div>
+          <h2 style={{ fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 900, color: "#fff", margin: "0 0 14px", letterSpacing: "-0.5px" }}>
+            Ready to book with confidence?
+          </h2>
+          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.75)", margin: "0 0 32px", lineHeight: 1.65 }}>
+            Search car hire, hotels, or flights — with full transparency on every result. No account needed.
+          </p>
+          <a href="#search" style={{ background: ACCENT, color: YELLOW, fontWeight: 800, fontSize: 16, padding: "16px 40px", borderRadius: 10, textDecoration: "none", display: "inline-block", boxShadow: "0 4px 20px rgba(0,0,0,0.25)", letterSpacing: "-0.2px" }}>
+            Search with transparency →
+          </a>
+          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 20 }}>
+            Already have a booking?{" "}
+            <a href="https://rentaltruth.co.uk" target="_blank" rel="noopener noreferrer" style={{ color: "rgba(255,255,255,0.8)", fontWeight: 600 }}>
+              Analyse it on RentalTruth →
+            </a>
+          </p>
+        </div>
+      </section>
+
+      {/* ── Footer — dark ── */}
+      <footer style={{ background: DARK, padding: "40px 28px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" as const, gap: 20 }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 6 }}>
+              Fair<span style={{ color: ACCENT }}>Booking</span>
+            </div>
+            <p style={{ fontSize: 12, color: "#6b84b0", margin: 0 }}>Transparent travel booking · Powered by RentalTruth AI</p>
+          </div>
+          <div style={{ display: "flex", gap: 28, alignItems: "center", flexWrap: "wrap" as const }}>
+            <a href="https://rentaltruth.co.uk" target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#6b84b0", textDecoration: "none", fontWeight: 500 }}>RentalTruth</a>
+            <a href="mailto:hello@fairbooking.co.uk" style={{ fontSize: 13, color: "#6b84b0", textDecoration: "none", fontWeight: 500 }}>Contact</a>
+            <a href="#" style={{ fontSize: 13, color: "#6b84b0", textDecoration: "none", fontWeight: 500 }}>Privacy</a>
+            <span style={{ fontSize: 12, color: "#374151" }}>© 2026 FairBooking Ltd</span>
+          </div>
+        </div>
+      </footer>
 
     </div>
   );
