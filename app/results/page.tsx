@@ -8,25 +8,113 @@ import type { SearchResult, TravelType } from "@/lib/types";
 
 const ACCENT = "#e8501a";
 
-function SortBar({ count, sort, setSort, type }: { count: number; sort: string; setSort: (s: string) => void; type: TravelType }) {
+function getProviderName(r: SearchResult): string {
+  if (r.type === "carhire") return (r as any).provider;
+  if (r.type === "hotels")  return (r as any).provider;
+  return (r as any).airline;
+}
+
+function getPrice(r: SearchResult): number {
+  if (r.type === "flights") return (r as any).price;
+  if (r.type === "hotels")  return (r as any).pricePerNight;
+  return (r as any).totalPrice;
+}
+
+function FilterSidebar({
+  results,
+  minScore, setMinScore,
+  maxPrice, setMaxPrice,
+  freeCancellation, setFreeCancellation,
+  debitAccepted, setDebitAccepted,
+  selectedProviders, setSelectedProviders,
+}: {
+  results: SearchResult[];
+  minScore: number; setMinScore: (v: number) => void;
+  maxPrice: number; setMaxPrice: (v: number) => void;
+  freeCancellation: boolean; setFreeCancellation: (v: boolean) => void;
+  debitAccepted: boolean; setDebitAccepted: (v: boolean) => void;
+  selectedProviders: string[]; setSelectedProviders: (v: string[]) => void;
+}) {
+  const allProviders = [...new Set(results.map(getProviderName))].sort();
+  const prices = results.map(getPrice);
+  const maxPossible = prices.length ? Math.max(...prices) : 500;
+
+  function toggleProvider(p: string) {
+    setSelectedProviders(selectedProviders.includes(p)
+      ? selectedProviders.filter(x => x !== p)
+      : [...selectedProviders, p]
+    );
+  }
+
+  const headingStyle: React.CSSProperties = { fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6b7280", marginBottom: 12, marginTop: 20 };
+  const labelStyle: React.CSSProperties = { fontSize: 13, color: "#374151", fontWeight: 500 };
+  const valueStyle: React.CSSProperties = { fontSize: 12, color: ACCENT, fontWeight: 700 };
+
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap" as const, gap: 10 }}>
-      <div style={{ fontSize: 14, color: "#374151" }}>
-        <strong>{count}</strong> results — sorted by transparency
+    <aside style={{ width: 228, flexShrink: 0, padding: "24px 20px 24px 0", borderRight: "1px solid #e2e8f0", minHeight: "calc(100vh - 180px)" }}>
+      <div style={{ fontSize: 14, fontWeight: 800, color: "#0f172a", marginBottom: 4 }}>Filters</div>
+      <div style={{ fontSize: 11, color: "#94a3b8" }}>Refine your results</div>
+
+      {/* Min transparency score */}
+      <div style={headingStyle}>Min. Transparency Score</div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+        <span style={labelStyle}>Score</span>
+        <span style={valueStyle}>{minScore}+</span>
       </div>
-      <div style={{ display: "flex", gap: 6 }}>
-        {["transparency", "price", "rating"].map(s => (
-          <button key={s} onClick={() => setSort(s)} style={{
-            padding: "6px 14px", border: "1.5px solid", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer",
-            borderColor: sort === s ? ACCENT : "#e2e8f0",
-            background: sort === s ? ACCENT : "#fff",
-            color: sort === s ? "#fff" : "#6b7280",
-          }}>
-            {s === "transparency" ? "🏆 Transparency" : s === "price" ? "💰 Price" : "⭐ Rating"}
-          </button>
-        ))}
+      <input type="range" min={0} max={100} step={5} value={minScore} onChange={e => setMinScore(+e.target.value)}
+        style={{ width: "100%", accentColor: ACCENT }} />
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#94a3b8", marginTop: 3 }}>
+        <span>Any</span><span>100</span>
       </div>
-    </div>
+
+      {/* Max price */}
+      <div style={headingStyle}>Max Price</div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+        <span style={labelStyle}>Up to</span>
+        <span style={valueStyle}>£{maxPrice}</span>
+      </div>
+      <input type="range" min={0} max={maxPossible} step={10} value={maxPrice} onChange={e => setMaxPrice(+e.target.value)}
+        style={{ width: "100%", accentColor: ACCENT }} />
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#94a3b8", marginTop: 3 }}>
+        <span>£0</span><span>£{maxPossible}</span>
+      </div>
+
+      {/* Show only */}
+      <div style={headingStyle}>Show only</div>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, cursor: "pointer" }}>
+        <input type="checkbox" checked={freeCancellation} onChange={e => setFreeCancellation(e.target.checked)} style={{ accentColor: ACCENT, width: 15, height: 15 }} />
+        <span style={labelStyle}>Free cancellation</span>
+      </label>
+      <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+        <input type="checkbox" checked={debitAccepted} onChange={e => setDebitAccepted(e.target.checked)} style={{ accentColor: ACCENT, width: 15, height: 15 }} />
+        <span style={labelStyle}>Debit card accepted</span>
+      </label>
+
+      {/* Providers */}
+      {allProviders.length > 0 && (
+        <>
+          <div style={headingStyle}>Provider</div>
+          <div style={{ display: "flex", flexDirection: "column" as const, gap: 8 }}>
+            {allProviders.map(p => (
+              <label key={p} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                <input type="checkbox" checked={selectedProviders.includes(p)} onChange={() => toggleProvider(p)} style={{ accentColor: ACCENT, width: 15, height: 15 }} />
+                <span style={{ ...labelStyle, fontSize: 12 }}>{p}</span>
+              </label>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Reset */}
+      {(minScore > 0 || maxPrice < maxPossible || freeCancellation || debitAccepted || selectedProviders.length > 0) && (
+        <button
+          onClick={() => { setMinScore(0); setMaxPrice(maxPossible); setFreeCancellation(false); setDebitAccepted(false); setSelectedProviders([]); }}
+          style={{ marginTop: 20, width: "100%", background: "none", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "8px", fontSize: 12, fontWeight: 600, color: "#6b7280", cursor: "pointer" }}
+        >
+          Reset all filters
+        </button>
+      )}
+    </aside>
   );
 }
 
@@ -35,10 +123,15 @@ function ResultsContent() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState("transparency");
+  const [minScore, setMinScore] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(9999);
+  const [freeCancellation, setFreeCancellation] = useState(false);
+  const [debitAccepted, setDebitAccepted] = useState(false);
+  const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
 
   const type = (searchParams.get("type") || "carhire") as TravelType;
-  const from = searchParams.get("from") || "";
-  const to = searchParams.get("to") || "";
+  const from  = searchParams.get("from") || "";
+  const to    = searchParams.get("to")   || "";
   const date1 = searchParams.get("pickupDate") || searchParams.get("checkIn") || "";
   const date2 = searchParams.get("returnDate") || searchParams.get("checkOut") || "";
 
@@ -51,81 +144,141 @@ function ResultsContent() {
         body: JSON.stringify({ type, from, to, pickupDate: date1, returnDate: date2, checkIn: date1, checkOut: date2 }),
       });
       const data = await res.json();
-      setResults(data.results || []);
+      const fetched = data.results || [];
+      setResults(fetched);
+      const prices = fetched.map(getPrice);
+      if (prices.length) setMaxPrice(Math.max(...prices));
       setLoading(false);
     }
     search();
   }, [type, from, to, date1, date2]);
 
   const sorted = [...results].sort((a, b) => {
-    if (sort === "price") {
-      const aPrice = a.type === "flights" ? (a as any).price : a.type === "hotels" ? (a as any).pricePerNight : (a as any).totalPrice;
-      const bPrice = b.type === "flights" ? (b as any).price : b.type === "hotels" ? (b as any).pricePerNight : (b as any).totalPrice;
-      return aPrice - bPrice;
-    }
+    if (sort === "price") return getPrice(a) - getPrice(b);
     return b.transparencyScore - a.transparencyScore;
   });
 
-  const avgScore = results.length ? Math.round(results.reduce((s, r) => s + r.transparencyScore, 0) / results.length) : 0;
-  const highRisk = results.filter(r => r.transparencyScore < 50).length;
+  const filtered = sorted
+    .filter(r => r.transparencyScore >= minScore)
+    .filter(r => getPrice(r) <= maxPrice)
+    .filter(r => selectedProviders.length === 0 || selectedProviders.includes(getProviderName(r)))
+    .filter(r => !freeCancellation || r.flags.some(f => f.label.toLowerCase().includes("cancel")))
+    .filter(r => !debitAccepted || r.flags.some(f => f.label.toLowerCase().includes("debit")));
+
+  const avgScore  = results.length ? Math.round(results.reduce((s, r) => s + r.transparencyScore, 0) / results.length) : 0;
+  const highRisk  = results.filter(r => r.transparencyScore < 50).length;
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 16px 48px" }}>
-      {/* Search bar */}
-      <div style={{ background: "#1a1a2e", margin: "0 -16px", padding: "20px 16px" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+    <div>
+      {/* Compact search bar — light grey background */}
+      <div style={{ background: "#f1f5f9", borderBottom: "1px solid #e2e8f0", padding: "16px 24px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <SearchForm compact defaultType={type} />
         </div>
       </div>
 
-      <div style={{ paddingTop: 28 }}>
-        {loading ? (
-          <div style={{ textAlign: "center" as const, padding: "64px 0", color: "#6b7280" }}>
-            <div style={{ fontSize: 40, marginBottom: 14 }}>🔍</div>
-            <p style={{ fontSize: 16, fontWeight: 600, margin: "0 0 6px", color: "#374151" }}>Analysing transparency scores…</p>
-            <p style={{ fontSize: 13, margin: 0 }}>Checking {type === "carhire" ? "car hire" : type} terms for hidden restrictions</p>
-          </div>
-        ) : (
-          <>
-            {/* Summary stats */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24 }}>
-              {[
-                { label: "Results found", value: results.length.toString(), icon: "📋" },
-                { label: "Avg transparency score", value: `${avgScore}/100`, icon: "🏆" },
-                { label: "High risk results", value: highRisk.toString(), icon: "⚠️" },
-              ].map(({ label, value, icon }) => (
-                <div key={label} style={{ background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 10, padding: "14px 16px", textAlign: "center" as const }}>
-                  <div style={{ fontSize: 20, marginBottom: 4 }}>{icon}</div>
-                  <div style={{ fontSize: 20, fontWeight: 900, color: "#1a1a2e" }}>{value}</div>
-                  <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>{label}</div>
-                </div>
-              ))}
-            </div>
-
+      {/* Summary stats banner — light blue */}
+      {!loading && results.length > 0 && (
+        <div style={{ background: "#eff6ff", borderBottom: "1px solid #bfdbfe", padding: "11px 24px" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", gap: 28, alignItems: "center", flexWrap: "wrap" as const }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#1e3a5f" }}>📋 {results.length} results</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: avgScore >= 65 ? "#15803d" : "#92400e" }}>
+              🏆 Avg score: {avgScore}/100
+            </span>
             {highRisk > 0 && (
-              <div style={{ background: "#fff7ed", border: "1.5px solid #fed7aa", borderRadius: 10, padding: "12px 16px", marginBottom: 20, fontSize: 13, color: "#9a3412" }}>
-                ⚠️ <strong>{highRisk} result{highRisk > 1 ? "s" : ""}</strong> flagged as high risk. Consider sorting by transparency to see the safest options first.
-              </div>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "#b91c1c" }}>⚠️ {highRisk} high risk</span>
             )}
+            <span style={{ fontSize: 12, color: "#64748b", marginLeft: "auto" }}>
+              Showing {filtered.length} of {results.length}
+            </span>
+          </div>
+        </div>
+      )}
 
-            <SortBar count={sorted.length} sort={sort} setSort={setSort} type={type} />
+      {/* Main layout — sidebar + results */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "flex-start" }}>
 
-            <div style={{ display: "flex", flexDirection: "column" as const, gap: 14 }}>
-              {sorted.map(result => (
-                <ResultCard key={result.id} result={result} />
-              ))}
-            </div>
-
-            <div style={{ marginTop: 28, padding: "20px", background: "#1a1a2e", borderRadius: 12, textAlign: "center" as const }}>
-              <p style={{ margin: "0 0 10px", fontSize: 14, color: "#94a3b8" }}>
-                Already have a booking? Paste your full confirmation for a complete AI analysis, complaint letter, and refund guidance.
-              </p>
-              <a href="https://rentaltruth.co.uk" target="_blank" rel="noopener noreferrer" style={{ background: ACCENT, color: "#fff", borderRadius: 8, padding: "10px 24px", fontSize: 14, fontWeight: 700, textDecoration: "none", display: "inline-block" }}>
-                Analyse on RentalTruth →
-              </a>
-            </div>
-          </>
+        {/* Filter sidebar */}
+        {!loading && results.length > 0 && (
+          <FilterSidebar
+            results={results}
+            minScore={minScore} setMinScore={setMinScore}
+            maxPrice={maxPrice} setMaxPrice={setMaxPrice}
+            freeCancellation={freeCancellation} setFreeCancellation={setFreeCancellation}
+            debitAccepted={debitAccepted} setDebitAccepted={setDebitAccepted}
+            selectedProviders={selectedProviders} setSelectedProviders={setSelectedProviders}
+          />
         )}
+
+        {/* Results column */}
+        <div style={{ flex: 1, padding: loading ? "48px 0" : "24px 0 48px", paddingLeft: results.length > 0 ? 28 : 0 }}>
+          {loading ? (
+            <div style={{ textAlign: "center" as const, color: "#6b7280" }}>
+              <div style={{ fontSize: 40, marginBottom: 14 }}>🔍</div>
+              <p style={{ fontSize: 16, fontWeight: 600, margin: "0 0 6px", color: "#374151" }}>Analysing transparency scores…</p>
+              <p style={{ fontSize: 13, margin: 0 }}>Checking {type === "carhire" ? "car hire" : type} terms for hidden restrictions</p>
+            </div>
+          ) : (
+            <>
+              {/* Sort bar */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap" as const, gap: 10 }}>
+                <div style={{ fontSize: 14, color: "#374151" }}>
+                  <strong>{filtered.length}</strong> result{filtered.length !== 1 ? "s" : ""} — sorted by{" "}
+                  <span style={{ color: ACCENT, fontWeight: 700 }}>{sort}</span>
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {[
+                    { key: "transparency", label: "🏆 Transparency" },
+                    { key: "price",        label: "💰 Price" },
+                  ].map(({ key, label }) => (
+                    <button key={key} onClick={() => setSort(key)} style={{
+                      padding: "7px 16px", border: "1.5px solid", borderRadius: 20,
+                      fontSize: 12, fontWeight: 600, cursor: "pointer",
+                      borderColor: sort === key ? ACCENT : "#e2e8f0",
+                      background: sort === key ? ACCENT : "#fff",
+                      color: sort === key ? "#fff" : "#6b7280",
+                      transition: "all 0.15s",
+                    }}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {highRisk > 0 && (
+                <div style={{ background: "#fff7ed", border: "1.5px solid #fed7aa", borderLeft: "4px solid #ea580c", borderRadius: 10, padding: "12px 16px", marginBottom: 16, fontSize: 13, color: "#9a3412" }}>
+                  ⚠️ <strong>{highRisk} result{highRisk > 1 ? "s" : ""}</strong> flagged as high risk. Sort by transparency to see the safest options first.
+                </div>
+              )}
+
+              {filtered.length === 0 && (
+                <div style={{ textAlign: "center" as const, padding: "48px 0", color: "#6b7280" }}>
+                  <div style={{ fontSize: 32, marginBottom: 12 }}>🔎</div>
+                  <p style={{ fontSize: 15, fontWeight: 600, margin: "0 0 6px", color: "#374151" }}>No results match your filters</p>
+                  <p style={{ fontSize: 13, margin: 0 }}>Try adjusting the transparency score or price range</p>
+                </div>
+              )}
+
+              <div style={{ display: "flex", flexDirection: "column" as const, gap: 14 }}>
+                {filtered.map(result => (
+                  <ResultCard key={result.id} result={result} />
+                ))}
+              </div>
+
+              {filtered.length > 0 && (
+                <div style={{ marginTop: 28, padding: "20px 24px", background: "#1a1a2e", borderRadius: 12, textAlign: "center" as const }}>
+                  <p style={{ margin: "0 0 10px", fontSize: 14, color: "#94a3b8" }}>
+                    Already have a booking? Paste your full confirmation for a complete AI analysis, complaint letter, and refund guidance.
+                  </p>
+                  <a href="https://rentaltruth.co.uk" target="_blank" rel="noopener noreferrer"
+                    style={{ background: ACCENT, color: "#fff", borderRadius: 8, padding: "10px 24px", fontSize: 14, fontWeight: 700, textDecoration: "none", display: "inline-block" }}>
+                    Analyse on RentalTruth →
+                  </a>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -133,21 +286,29 @@ function ResultsContent() {
 
 export default function ResultsPage() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", minHeight: "100vh", background: "#f8f7f4" }}>
-      <nav style={{ background: "#1a1a2e", padding: "0 24px", borderBottom: `3px solid ${ACCENT}` }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", height: 52 }}>
+    <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", minHeight: "100vh", background: "#f8fafc" }}>
+      {/* White nav */}
+      <nav style={{ background: "#fff", borderBottom: "1px solid #e2e8f0", padding: "0 24px", position: "sticky", top: 0, zIndex: 50 }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", height: 56 }}>
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
             <span style={{ fontSize: 18 }}>🔍</span>
-            <span style={{ color: "#fff", fontSize: 18, fontWeight: 800 }}>
+            <span style={{ color: "#0f172a", fontSize: 18, fontWeight: 800 }}>
               Fair<span style={{ color: ACCENT }}>Booking</span>
             </span>
           </Link>
-          <a href="https://rentaltruth.co.uk" target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "#94a3b8", textDecoration: "none", fontWeight: 500 }}>
+          <a href="https://rentaltruth.co.uk" target="_blank" rel="noopener noreferrer"
+            style={{ fontSize: 12, color: "#64748b", textDecoration: "none", fontWeight: 500 }}>
             Powered by RentalTruth →
           </a>
         </div>
       </nav>
-      <Suspense fallback={<div style={{ padding: 40, textAlign: "center" as const }}>Loading…</div>}>
+
+      <Suspense fallback={
+        <div style={{ padding: "80px 0", textAlign: "center" as const, color: "#6b7280" }}>
+          <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
+          <p style={{ fontSize: 15, fontWeight: 600, color: "#374151" }}>Loading results…</p>
+        </div>
+      }>
         <ResultsContent />
       </Suspense>
     </div>
