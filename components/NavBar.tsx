@@ -28,10 +28,11 @@ export default function NavBar({ showLinks = true, rightContent }: Props) {
         {showLinks && (
           <div className="nav-links">
             {[
-              { label: "Car hire", href: "/#search" },
-              { label: "Hotels",   href: "/#search" },
-              { label: "Flights",  href: "/#search" },
+              { label: "Car hire",    href: "/#search" },
+              { label: "Hotels",      href: "/#search" },
+              { label: "Flights",     href: "/#search" },
               { label: "How it works", href: "/#how" },
+              { label: "✈️ Flight help", href: "/flight-help" },
             ].map(({ label, href }) => (
               <a key={label} href={href} style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, fontWeight: 500, textDecoration: "none" }}>
                 {label}
@@ -60,10 +61,11 @@ export default function NavBar({ showLinks = true, rightContent }: Props) {
       {showLinks && (
         <div className={`nav-mobile-menu${open ? " open" : ""}`} style={{ position: "absolute", top: "100%", left: 0, right: 0 }}>
           {[
-            { label: "Car hire",     href: "/#search" },
-            { label: "Hotels",       href: "/#search" },
-            { label: "Flights",      href: "/#search" },
-            { label: "How it works", href: "/#how" },
+            { label: "Car hire",       href: "/#search" },
+            { label: "Hotels",         href: "/#search" },
+            { label: "Flights",        href: "/#search" },
+            { label: "How it works",   href: "/#how" },
+            { label: "✈️ Flight help", href: "/flight-help" },
           ].map(({ label, href }) => (
             <a
               key={label} href={href}

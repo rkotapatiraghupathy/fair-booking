@@ -281,7 +281,21 @@ function ResultsContent() {
                 </div>
 
                 {filtered.length > 0 && (
-                  <div style={{ marginTop: 28, padding: "clamp(16px,2vw,20px) clamp(16px,2vw,24px)", background: DARK, borderRadius: 12, textAlign: "center" as const }}>
+                  <a href="/flight-help" style={{ textDecoration: "none", display: "block", marginTop: 14 }}>
+                    <div style={{ background: "linear-gradient(135deg, #163a8e 0%, #1e4db7 100%)", borderRadius: 12, padding: "clamp(14px,2vw,18px) clamp(16px,2vw,24px)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" as const }}>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: "#fff", marginBottom: 3 }}>✈️ Flight go wrong? Get your compensation →</div>
+                        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.65)" }}>Up to £520 per passenger under UK261 — free complaint letter in 3 minutes</div>
+                      </div>
+                      <div style={{ background: ACCENT, color: "#fff", borderRadius: 8, padding: "8px 18px", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap" as const, flexShrink: 0 }}>
+                        Claim now →
+                      </div>
+                    </div>
+                  </a>
+                )}
+
+              {filtered.length > 0 && (
+                  <div style={{ marginTop: 14, padding: "clamp(16px,2vw,20px) clamp(16px,2vw,24px)", background: DARK, borderRadius: 12, textAlign: "center" as const }}>
                     <p style={{ margin: "0 0 10px", fontSize: 14, color: "#6b84b0" }}>
                       Already have a booking? Paste your full confirmation for a complete AI analysis, complaint letter, and refund guidance.
                     </p>
