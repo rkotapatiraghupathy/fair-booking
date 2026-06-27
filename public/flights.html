@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search and compare flights with full transparency on fees and restrictions. Powered by FairBooking and Travelpayouts.">
+  <title>FairBooking Flights — Search with full transparency</title>
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Travelpayouts White Label CSS -->
+  <link rel="stylesheet" href="https://www.travelpayouts.com/wl/css/main.css" type="text/css">
+
+  <style>
+    /* ── Travelpayouts CSS variable overrides ─────────────────────────── */
+    :root {
+      --tpwl-search-form-background:   #163a8e;
+      --tpwl-search-result-background: #f1f6fe;
+      --tpwl-headline-text:            #ffffff;
+      --tpwl-main-text:                #0a1628;
+      --tpwl-links:                    #163a8e;
+
+      /* Additional TPWL theme tokens */
+      --tpwl-button-background:        #e8501a;
+      --tpwl-button-text:              #ffffff;
+      --tpwl-button-hover-background:  #c73e13;
+      --tpwl-card-background:          #ffffff;
+      --tpwl-card-border:              #dbe8fa;
+      --tpwl-secondary-text:           #6b84b0;
+      --tpwl-tab-active:               #e8501a;
+      --tpwl-input-background:         #f8faff;
+      --tpwl-input-border:             #dbe8fa;
+      --tpwl-input-focus-border:       #163a8e;
+      --tpwl-price-color:              #163a8e;
+      --tpwl-badge-background:         #dcfce7;
+      --tpwl-badge-text:               #166534;
+      --tpwl-warning-background:       #fee2e2;
+      --tpwl-warning-text:             #991b1b;
+    }
+
+    /* ── Reset & base ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; min-height: 100vh; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f1f6fe;
+      color: #0a1628;
+    }
+
+    /* ── Layout utility ────────────────────────────────────────────────── */
+    .fb-container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 clamp(16px, 4vw, 80px);
+    }
+
+    /* ── FairBooking nav ───────────────────────────────────────────────── */
+    .fb-nav {
+      background: #163a8e;
+      border-bottom: 1px solid #1d4499;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      width: 100%;
+    }
+
+    .fb-nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 clamp(16px, 4vw, 80px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 62px;
+    }
+
+    .fb-logo {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .fb-logo-icon { font-size: 20px; }
+
+    .fb-logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .fb-logo-text span { color: #e8501a; }
+
+    .fb-beta {
+      background: #e8501a;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .fb-nav-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .fb-nav-links a {
+      color: rgba(255,255,255,0.8);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .fb-nav-links a:hover { color: #fff; }
+
+    .fb-nav-links a.active {
+      color: #fff;
+      font-weight: 700;
+      border-bottom: 2px solid #e8501a;
+      padding-bottom: 2px;
+    }
+
+    .fb-nav-cta {
+      background: #e8501a;
+      color: #fff !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      padding: 8px 18px;
+      border-radius: 8px;
+    }
+
+    .fb-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    /* ── Hero ──────────────────────────────────────────────────────────── */
+    .fb-hero {
+      background: linear-gradient(145deg, #0a1628 0%, #163a8e 60%, #1e4db7 100%);
+      padding: clamp(48px, 6vw, 80px) 0 0;
+      width: 100%;
+    }
+
+    .fb-hero-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 clamp(16px, 4vw, 80px);
+      text-align: center;
+    }
+
+    .fb-hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 20px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .fb-hero h1 {
+      color: #fff;
+      font-size: clamp(24px, 3.5vw, 48px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 14px;
+    }
+
+    .fb-hero h1 em {
+      color: #f4be41;
+      font-style: normal;
+    }
+
+    .fb-hero-sub {
+      color: rgba(255,255,255,0.72);
+      font-size: clamp(13px, 1.4vw, 16px);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── TPWL search form wrapper ──────────────────────────────────────── */
+    .tpwl-wrapper {
+      max-width: 1000px;
+      margin: 0 auto;
+      border-radius: 14px 14px 0 0;
+      overflow: hidden;
+      box-shadow: 0 -4px 32px rgba(0,0,0,0.25);
+    }
+
+    /* ── Trust bar ─────────────────────────────────────────────────────── */
+    .fb-trust {
+      background: #fff;
+      border-bottom: 1px solid #dbe8fa;
+      width: 100%;
+    }
+
+    .fb-trust-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .fb-trust-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 32px;
+    }
+
+    .fb-trust-item:not(:last-child) { border-right: 1px solid #f0f5ff; }
+
+    .fb-trust-item .ti-icon { font-size: 22px; }
+
+    .fb-trust-item .ti-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0a1628;
+    }
+
+    .fb-trust-item .ti-sub {
+      font-size: 11px;
+      color: #6b84b0;
+      margin-top: 1px;
+    }
+
+    /* ── Popular destinations ──────────────────────────────────────────── */
+    .fb-popular {
+      background: #fff;
+      border-bottom: 1px solid #dbe8fa;
+      width: 100%;
+    }
+
+    .fb-popular-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: clamp(36px, 5vw, 60px) clamp(16px, 4vw, 80px);
+    }
+
+    .fb-popular-head {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #e8501a;
+      margin-bottom: 10px;
+    }
+
+    .fb-popular h2 {
+      font-size: clamp(18px, 2.5vw, 26px);
+      font-weight: 900;
+      color: #0a1628;
+      margin-bottom: 28px;
+      letter-spacing: -0.5px;
+    }
+
+    .fb-dest-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .fb-dest-card {
+      border-radius: 12px;
+      overflow: hidden;
+      text-decoration: none;
+      border: 1px solid #dbe8fa;
+      transition: box-shadow 0.15s, transform 0.15s;
+      display: block;
+    }
+
+    .fb-dest-card:hover {
+      box-shadow: 0 8px 28px rgba(22,58,142,0.14);
+      transform: translateY(-2px);
+    }
+
+    .fb-dest-img {
+      height: 140px;
+      display: flex;
+      align-items: flex-end;
+      padding: 14px;
+      position: relative;
+    }
+
+    .fb-dest-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(10,22,40,0.7) 0%, rgba(10,22,40,0.1) 100%);
+    }
+
+    .fb-dest-label {
+      position: relative;
+      z-index: 1;
+      color: #fff;
+    }
+
+    .fb-dest-code {
+      font-size: 11px;
+      font-weight: 700;
+      opacity: 0.75;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .fb-dest-city {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .fb-dest-country {
+      font-size: 11px;
+      opacity: 0.75;
+    }
+
+    .fb-dest-footer {
+      background: #fff;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .fb-dest-from {
+      font-size: 11px;
+      color: #6b84b0;
+      font-weight: 500;
+    }
+
+    .fb-dest-cta {
+      font-size: 12px;
+      font-weight: 700;
+      color: #163a8e;
+    }
+
+    /* ── TPWL results container ────────────────────────────────────────── */
+    .tpwl-results-section {
+      background: #f1f6fe;
+      width: 100%;
+      min-height: 200px;
+      padding: clamp(24px, 4vw, 48px) 0;
+    }
+
+    #tpwl-results {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 clamp(16px, 4vw, 80px);
+    }
+
+    /* ── Flight help strip ─────────────────────────────────────────────── */
+    .fb-help-strip {
+      background: #f1f6fe;
+      border-top: 1px solid #dbe8fa;
+      border-bottom: 1px solid #dbe8fa;
+      width: 100%;
+    }
+
+    .fb-help-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: clamp(20px, 3vw, 32px) clamp(16px, 4vw, 80px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .fb-help-text strong {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0a1628;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .fb-help-text span {
+      font-size: 13px;
+      color: #6b84b0;
+    }
+
+    .fb-help-btn {
+      background: #163a8e;
+      color: #fff;
+      border-radius: 9px;
+      padding: 11px 24px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── Footer ────────────────────────────────────────────────────────── */
+    .fb-footer {
+      background: #0a1628;
+      width: 100%;
+    }
+
+    .fb-footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: clamp(28px, 4vw, 44px) clamp(16px, 4vw, 80px);
+    }
+
+    .fb-footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 20px;
+    }
+
+    .fb-footer-brand .logo-text {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .fb-footer-brand .logo-text span { color: #e8501a; }
+
+    .fb-footer-brand p {
+      font-size: 12px;
+      color: #6b84b0;
+      line-height: 1.6;
+      max-width: 280px;
+    }
+
+    .fb-footer-links {
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .fb-footer-col h4 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 14px;
+    }
+
+    .fb-footer-col a {
+      display: block;
+      font-size: 13px;
+      color: #6b84b0;
+      text-decoration: none;
+      margin-bottom: 10px;
+      transition: color 0.15s;
+    }
+
+    .fb-footer-col a:hover { color: #fff; }
+
+    .fb-footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+      color: #374151;
+    }
+
+    .fb-footer-legal a { color: #6b84b0; text-decoration: none; margin-left: 16px; }
+    .fb-footer-legal a:hover { color: #fff; }
+
+    /* ── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .fb-trust-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .fb-trust-item {
+        padding: 16px 20px;
+        border-right: none !important;
+      }
+      .fb-trust-item:nth-child(-n+2) { border-bottom: 1px solid #f0f5ff; }
+
+      .fb-dest-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .fb-nav-links { display: none; }
+      .fb-hamburger { display: block; }
+      .fb-dest-grid { grid-template-columns: 1fr 1fr; }
+      .fb-footer-links { gap: 28px; }
+    }
+
+    @media (max-width: 540px) {
+      .fb-dest-grid { grid-template-columns: 1fr; }
+      .fb-trust-inner { grid-template-columns: 1fr; }
+      .fb-trust-item:nth-child(-n+2) { border-bottom: 1px solid #f0f5ff; }
+      .fb-trust-item:nth-child(3) { border-bottom: 1px solid #f0f5ff; }
+      .fb-trust-item:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── FairBooking nav ───────────────────────────────────────────────── -->
+  <nav class="fb-nav">
+    <div class="fb-nav-inner">
+      <a href="https://fairbooking.co.uk" class="fb-logo">
+        <span class="fb-logo-icon">🔍</span>
+        <span class="fb-logo-text">Fair<span>Booking</span></span>
+        <span class="fb-beta">BETA</span>
+      </a>
+
+      <div class="fb-nav-links">
+        <a href="https://fairbooking.co.uk/car-hire">🚗 Car hire</a>
+        <a href="https://fairbooking.co.uk/#search">Hotels</a>
+        <a href="https://fairbooking.co.uk/flights.html" class="active">Flights</a>
+        <a href="https://fairbooking.co.uk/flight-help">✈️ Flight help</a>
+        <a href="https://fairbooking.co.uk/#search" class="fb-nav-cta">Search free →</a>
+      </div>
+
+      <button class="fb-hamburger" onclick="toggleMenu()" aria-label="Menu">☰</button>
+    </div>
+
+    <!-- Mobile dropdown -->
+    <div id="fb-mobile-menu" style="display:none; flex-direction:column; background:#163a8e; border-top:1px solid #1d4499; position:absolute; left:0; right:0; z-index:100; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+      <a href="https://fairbooking.co.uk/car-hire"      style="color:rgba(255,255,255,0.85);font-size:15px;font-weight:500;text-decoration:none;padding:14px 24px;border-bottom:1px solid rgba(255,255,255,0.07);">🚗 Car hire</a>
+      <a href="https://fairbooking.co.uk/#search"       style="color:rgba(255,255,255,0.85);font-size:15px;font-weight:500;text-decoration:none;padding:14px 24px;border-bottom:1px solid rgba(255,255,255,0.07);">Hotels</a>
+      <a href="https://fairbooking.co.uk/flights.html"  style="color:#fff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 24px;border-bottom:1px solid rgba(255,255,255,0.07);">✈️ Flights</a>
+      <a href="https://fairbooking.co.uk/flight-help"   style="color:rgba(255,255,255,0.85);font-size:15px;font-weight:500;text-decoration:none;padding:14px 24px;border-bottom:1px solid rgba(255,255,255,0.07);">✈️ Flight help</a>
+      <div style="padding:14px 24px;">
+        <a href="https://fairbooking.co.uk/#search" style="background:#e8501a;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;display:block;text-align:center;">Search free →</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Hero ─────────────────────────────────────────────────────────── -->
+  <div class="fb-hero">
+    <div class="fb-hero-inner">
+      <div class="fb-hero-badge">✈️ Flights · Powered by Travelpayouts</div>
+
+      <h1>
+        Search flights —<br>
+        <em>full transparency before you book.</em>
+      </h1>
+
+      <p class="fb-hero-sub">
+        Compare hundreds of airlines and OTAs. Transparency scores on every result — hidden fees and restrictions surfaced before you click.
+      </p>
+
+      <!-- Travelpayouts TPWL search form -->
+      <div class="tpwl-wrapper">
+        <div id="tpwl-search" data-tpwl-container></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Trust bar ────────────────────────────────────────────────────── -->
+  <div class="fb-trust">
+    <div class="fb-trust-inner">
+      <div class="fb-trust-item">
+        <span class="ti-icon">✈️</span>
+        <div>
+          <div class="ti-title">700+ airlines</div>
+          <div class="ti-sub">Full network coverage</div>
+        </div>
+      </div>
+      <div class="fb-trust-item">
+        <span class="ti-icon">🔍</span>
+        <div>
+          <div class="ti-title">Hidden fees surfaced</div>
+          <div class="ti-sub">Baggage, seat, change costs</div>
+        </div>
+      </div>
+      <div class="fb-trust-item">
+        <span class="ti-icon">💸</span>
+        <div>
+          <div class="ti-title">Cashback included</div>
+          <div class="ti-sub">10% of our commission yours</div>
+        </div>
+      </div>
+      <div class="fb-trust-item">
+        <span class="ti-icon">✅</span>
+        <div>
+          <div class="ti-title">Always free</div>
+          <div class="ti-sub">No account needed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TPWL results ──────────────────────────────────────────────────── -->
+  <div class="tpwl-results-section">
+    <div id="tpwl-results"></div>
+  </div>
+
+  <!-- ── Popular destinations ─────────────────────────────────────────── -->
+  <div class="fb-popular">
+    <div class="fb-popular-inner">
+      <div class="fb-popular-head">Popular routes</div>
+      <h2>Where do you want to fly?</h2>
+
+      <div class="fb-dest-grid">
+
+        <!-- Liverpool -->
+        <a class="fb-dest-card" href="#" data-tpwl-destination="LPL" onclick="searchDest('LPL','Liverpool')">
+          <div class="fb-dest-img" style="background:linear-gradient(135deg, #1a3a5c 0%, #2d6adc 100%);">
+            <div class="fb-dest-label">
+              <div class="fb-dest-code">LPL</div>
+              <div class="fb-dest-city">Liverpool</div>
+              <div class="fb-dest-country">England, UK</div>
+            </div>
+          </div>
+          <div class="fb-dest-footer">
+            <span class="fb-dest-from">Popular UK hub</span>
+            <span class="fb-dest-cta">Search flights →</span>
+          </div>
+        </a>
+
+        <!-- London -->
+        <a class="fb-dest-card" href="#" data-tpwl-destination="LON" onclick="searchDest('LON','London')">
+          <div class="fb-dest-img" style="background:linear-gradient(135deg, #0a1628 0%, #163a8e 100%);">
+            <div class="fb-dest-label">
+              <div class="fb-dest-code">LON</div>
+              <div class="fb-dest-city">London</div>
+              <div class="fb-dest-country">England, UK</div>
+            </div>
+          </div>
+          <div class="fb-dest-footer">
+            <span class="fb-dest-from">LHR · LGW · STN · LTN · LCY</span>
+            <span class="fb-dest-cta">Search flights →</span>
+          </div>
+        </a>
+
+        <!-- Dubai -->
+        <a class="fb-dest-card" href="#" data-tpwl-destination="DXB" onclick="searchDest('DXB','Dubai')">
+          <div class="fb-dest-img" style="background:linear-gradient(135deg, #c2782a 0%, #e8a843 100%);">
+            <div class="fb-dest-label">
+              <div class="fb-dest-code">DXB</div>
+              <div class="fb-dest-city">Dubai</div>
+              <div class="fb-dest-country">United Arab Emirates</div>
+            </div>
+          </div>
+          <div class="fb-dest-footer">
+            <span class="fb-dest-from">Direct from most UK airports</span>
+            <span class="fb-dest-cta">Search flights →</span>
+          </div>
+        </a>
+
+        <!-- Barcelona -->
+        <a class="fb-dest-card" href="#" data-tpwl-destination="BCN" onclick="searchDest('BCN','Barcelona')">
+          <div class="fb-dest-img" style="background:linear-gradient(135deg, #b71c1c 0%, #e53935 100%);">
+            <div class="fb-dest-label">
+              <div class="fb-dest-code">BCN</div>
+              <div class="fb-dest-city">Barcelona</div>
+              <div class="fb-dest-country">Catalonia, Spain</div>
+            </div>
+          </div>
+          <div class="fb-dest-footer">
+            <span class="fb-dest-from">El Prat Airport</span>
+            <span class="fb-dest-cta">Search flights →</span>
+          </div>
+        </a>
+
+        <!-- Antalya -->
+        <a class="fb-dest-card" href="#" data-tpwl-destination="AYT" onclick="searchDest('AYT','Antalya')">
+          <div class="fb-dest-img" style="background:linear-gradient(135deg, #1b5e20 0%, #388e3c 100%);">
+            <div class="fb-dest-label">
+              <div class="fb-dest-code">AYT</div>
+              <div class="fb-dest-city">Antalya</div>
+              <div class="fb-dest-country">Turkey</div>
+            </div>
+          </div>
+          <div class="fb-dest-footer">
+            <span class="fb-dest-from">Turkish Riviera gateway</span>
+            <span class="fb-dest-cta">Search flights →</span>
+          </div>
+        </a>
+
+        <!-- Mallorca -->
+        <a class="fb-dest-card" href="#" data-tpwl-destination="PMI" onclick="searchDest('PMI','Mallorca')">
+          <div class="fb-dest-img" style="background:linear-gradient(135deg, #01579b 0%, #039be5 100%);">
+            <div class="fb-dest-label">
+              <div class="fb-dest-code">PMI</div>
+              <div class="fb-dest-city">Mallorca</div>
+              <div class="fb-dest-country">Balearic Islands, Spain</div>
+            </div>
+          </div>
+          <div class="fb-dest-footer">
+            <span class="fb-dest-from">Palma de Mallorca</span>
+            <span class="fb-dest-cta">Search flights →</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Flight help strip ─────────────────────────────────────────────── -->
+  <div class="fb-help-strip">
+    <div class="fb-help-inner">
+      <div class="fb-help-text">
+        <strong>✈️ Flight delayed or cancelled? Get your compensation →</strong>
+        <span>Up to £520 per passenger under UK261 law — free complaint letter in 3 minutes.</span>
+      </div>
+      <a href="https://fairbooking.co.uk/flight-help" class="fb-help-btn">Claim now →</a>
+    </div>
+  </div>
+
+  <!-- ── Footer ───────────────────────────────────────────────────────── -->
+  <footer class="fb-footer">
+    <div class="fb-footer-inner">
+      <div class="fb-footer-top">
+        <div class="fb-footer-brand">
+          <div class="logo-text">Fair<span>Booking</span></div>
+          <p>Transparent travel booking powered by Travelpayouts and RentalTruth AI. We surface hidden fees and restrictions before you book.</p>
+        </div>
+        <div class="fb-footer-links">
+          <div class="fb-footer-col">
+            <h4>Products</h4>
+            <a href="https://fairbooking.co.uk">Home</a>
+            <a href="https://fairbooking.co.uk/car-hire">Car hire</a>
+            <a href="https://fairbooking.co.uk/flights.html">Flights</a>
+            <a href="https://fairbooking.co.uk/flight-help">Flight help</a>
+          </div>
+          <div class="fb-footer-col">
+            <h4>Company</h4>
+            <a href="https://fairbooking.co.uk/privacy">Privacy policy</a>
+            <a href="https://fairbooking.co.uk/terms">Terms of use</a>
+            <a href="mailto:hello@fairbooking.co.uk">Contact us</a>
+            <a href="https://rentaltruth.co.uk" target="_blank" rel="noopener">RentalTruth</a>
+          </div>
+        </div>
+      </div>
+      <div class="fb-footer-bottom">
+        <span>© 2026 FairBooking Ltd. Flight search powered by Travelpayouts.</span>
+        <div class="fb-footer-legal">
+          <a href="https://fairbooking.co.uk/privacy">Privacy</a>
+          <a href="https://fairbooking.co.uk/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── Travelpayouts White Label script ──────────────────────────────── -->
+  <!--
+    Replace YOUR_MARKER below with your Travelpayouts partner marker.
+    Your marker can be found at: https://www.travelpayouts.com/programs
+  -->
+  <script>
+    window.TPWL_CONFIG = {
+      locale:   'en',
+      currency: 'gbp',
+      host:     'www.travelpayouts.com',
+      marker:   'YOUR_MARKER',           /* ← replace with your marker */
+      searchFormContainer:  'tpwl-search',
+      searchResultContainer: 'tpwl-results',
+      popularDestinations: [
+        { iata: 'LPL', name: 'Liverpool'  },
+        { iata: 'LON', name: 'London'     },
+        { iata: 'DXB', name: 'Dubai'      },
+        { iata: 'BCN', name: 'Barcelona'  },
+        { iata: 'AYT', name: 'Antalya'    },
+        { iata: 'PMI', name: 'Mallorca'   },
+      ],
+    };
+  </script>
+  <script async charset="utf-8"
+    src="https://www.travelpayouts.com/wl/js/main.js"
+    data-wl-host="www.travelpayouts.com"
+    data-marker="YOUR_MARKER"
+    data-locale="en"
+    data-currency="gbp"
+    data-container="tpwl-search"
+    data-results-container="tpwl-results">
+  </script>
+
+  <!-- Mobile menu toggle -->
+  <script>
+    function toggleMenu() {
+      var menu = document.getElementById('fb-mobile-menu');
+      var btn  = document.querySelector('.fb-hamburger');
+      var open = menu.style.display === 'flex';
+      menu.style.display = open ? 'none' : 'flex';
+      btn.textContent    = open ? '☰' : '✕';
+    }
+
+    function searchDest(iata, name) {
+      /* Signal to the TPWL widget to pre-fill destination */
+      if (window.TPWL && window.TPWL.setDestination) {
+        window.TPWL.setDestination(iata);
+      }
+      document.getElementById('tpwl-search').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+
+</body>
+</html>
